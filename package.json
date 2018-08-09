@@ -1,28 +1,28 @@
 {
-  "name": "screenshotserver",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KokocGroup/ScreenshotServer.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/KokocGroup/ScreenshotServer/issues"
-  },
-  "homepage": "https://github.com/KokocGroup/ScreenshotServer#readme",
-  "dependencies": {
-    "args": "^5.0.0",
-    "async": "^2.6.1",
-    "express": "^4.16.3",
-    "lodash": "^4.17.10",
-    "morgan": "^1.9.0",
-    "puppeteer": "^1.6.2",
-    "uuid": "^3.3.2"
-  }
+    "name": "screenshotserver",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KokocGroup/ScreenshotServer.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/KokocGroup/ScreenshotServer/issues"
+    },
+    "homepage": "https://github.com/KokocGroup/ScreenshotServer#readme",
+    "dependencies": {
+        "args": "^5.0.0",
+        "cluster": "^0.7.7",
+        "express": "^4.16.3",
+        "lodash": "^4.17.10",
+        "morgan": "^1.9.0",
+        "puppeteer": "^1.6.2"
+    }
 }
