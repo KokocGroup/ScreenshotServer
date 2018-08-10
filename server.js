@@ -5,6 +5,7 @@ const args = require("args");
 const cluster = require("cluster");
 
 args.option("port", "The port on which the app will be running", 3000);
+args.option("bind", "The ip on which the app will be running", "127.0.0.1");
 args.option("max-instances", "Max browser instances", 5);
 
 const flags = args.parse(process.argv);
@@ -27,7 +28,7 @@ if (cluster.isMaster) {
     app.use(morgan("tiny"));
     app.use("/", routes);
 
-    app.listen(flags.port, async function() {
-        console.log(`ScreenshotServer listening on port ${flags.port}! Instances: ${flags.maxInstances}`);
+    app.listen(flags.port, flags.bind, async function() {
+        console.log(`ScreenshotServer listening ${flags.bind} on port ${flags.port}! Instances: ${flags.maxInstances}`);
     });
 }

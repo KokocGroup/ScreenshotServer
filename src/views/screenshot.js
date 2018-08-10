@@ -23,7 +23,6 @@ module.exports = asyncWrap(async (req, res) => {
         timeout
     };
 
-    console.log("start ", task);
     let browser = null;
 
     try {
@@ -65,7 +64,9 @@ module.exports = asyncWrap(async (req, res) => {
         res.json({
             error: _.toString(error)
         });
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
     }
-
-    await browser.close();
 });
