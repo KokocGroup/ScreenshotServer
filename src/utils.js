@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const genericPool = require("generic-pool");
+const config = require("./config");
 
 const asyncWrap = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -42,7 +43,7 @@ class BrowserFactory {
 
 const browserPool = genericPool.createPool(
     {
-        create: () => {
+        create: async () => {
             return new BrowserFactory();
         },
         destroy: async browser => {
@@ -50,7 +51,7 @@ const browserPool = genericPool.createPool(
         }
     },
     {
-        max: 2,
+        max: config.maxInstances,
         min: 0
     }
 );
