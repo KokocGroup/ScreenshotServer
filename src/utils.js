@@ -12,7 +12,6 @@ class BrowserFactory {
 
     async getBrowser() {
         await this.close();
-        console.log(123)
         this.browser = await puppeteer.launch({
             headless: true,
             ignoreHTTPSErrors: true,
