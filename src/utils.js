@@ -48,11 +48,14 @@ const browserPool = genericPool.createPool(
         },
         destroy: async browser => {
             await browser.close();
-        }
+        },
+        validator: () => Promise.resolve(false)
     },
     {
         max: config.maxInstances,
-        min: 0
+        min: 0,
+        maxWaitingClients: config.maxInstances,
+        acquireTimeoutMillis: 10000
     }
 );
 
