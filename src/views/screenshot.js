@@ -25,6 +25,8 @@ module.exports = asyncWrap(async (req, res) => {
 
     let browser = null;
     let factoryInstance = null;
+    let image = null;
+    let error = null;
 
     try {
         factoryInstance = await browserPool.acquire();
@@ -37,18 +39,13 @@ module.exports = asyncWrap(async (req, res) => {
         await page.goto(task.target, { waitUntil: waitUntil, timeout: timeout });
         await page.setDefaultNavigationTimeout(waitFor);
         await page.waitFor(waitFor);
-        const image = await page.screenshot({
+        image = await page.screenshot({
             fullPage: fullPage,
             type: type,
             quality: quality
         });
-        res.status(200)
-            .contentType("image/jpeg")
-            .send(image);
-    } catch (error) {
-        res.status(400).json({
-            error: _.toString(error)
-        });
+    } catch (e) {
+        error = e;
     } finally {
         if (browser) {
             await factoryInstance.close();
@@ -56,5 +53,14 @@ module.exports = asyncWrap(async (req, res) => {
         if (factoryInstance) {
             await browserPool.destroy(factoryInstance);
         }
+    }
+    if (image) {
+        res.status(200)
+            .contentType("image/jpeg")
+            .send(image);
+    } else {
+        res.status(400).json({
+            error: _.toString(error)
+        });
     }
 });
