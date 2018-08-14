@@ -24,10 +24,10 @@ module.exports = asyncWrap(async (req, res) => {
     };
 
     let browser = null;
+    const factoryInstance = await browserPool.acquire();
 
     try {
-        factoryInstance = await browserPool.acquire();
-        const browser = await factoryInstance.getBrowser();
+        browser = await factoryInstance.getBrowser();
         const page = await browser.newPage();
         await page.viewport({
             width: width,
@@ -51,7 +51,7 @@ module.exports = asyncWrap(async (req, res) => {
     } finally {
         if (browser) {
             await factoryInstance.close();
-            myPool.release(factoryInstance);
         }
+        browserPool.release(factoryInstance);
     }
 });
