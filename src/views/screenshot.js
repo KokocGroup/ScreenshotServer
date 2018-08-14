@@ -52,7 +52,7 @@ module.exports = asyncWrap(async (req, res) => {
             await factoryInstance.close();
         }
         if (factoryInstance) {
-            await browserPool.release(factoryInstance);
+            await browserPool.destroy(factoryInstance);
         }
     }
     if (image) {

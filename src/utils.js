@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const genericPool = require("generic-pool");
 const config = require("./config");
+const child_process = require("child_process");
 
 const asyncWrap = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -9,6 +10,7 @@ const asyncWrap = fn => (req, res, next) => {
 class BrowserFactory {
     constructor() {
         this.browser = null;
+        this.pid = null;
     }
 
     async getBrowser() {
@@ -27,15 +29,39 @@ class BrowserFactory {
                 "--hide-scrollbars",
                 "--metrics-recording-only",
                 "--mute-audio",
-                "--safebrowsing-disable-auto-update"
+                "--safebrowsing-disable-auto-update",
+                "--disable-gpu",
+                "--single-process",
+                "--disable-web-security",
+                "--disable-dev-profile"
             ]
         });
+
+        const pid = this.browser.process().pid;
+
+        this.browser.on(
+            "disconnected",
+            () => {
+                setTimeout(() => {
+                    console.log(`Browser Disconnected... Process Id: ${pid}`);
+                    child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(`Process Kill Error: ${error}`);
+                        } else {
+                            console.log(`Process Kill Success. stdout: ${stdout} stderr:${stderr}`);
+                        }
+                    });
+                });
+            },
+            100
+        );
+
         return this.browser;
     }
 
     async close() {
         if (this.browser) {
-            await this.browser.close();
+            await this.browser.disconnect();
         }
         this.browser = null;
     }
