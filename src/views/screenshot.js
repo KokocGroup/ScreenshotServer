@@ -1,5 +1,5 @@
-const puppeteer = require("puppeteer");
 const asyncWrap = require("../utils").asyncWrap;
+const browserPool = require("../utils").browserPool;
 const _ = require("lodash");
 
 module.exports = asyncWrap(async (req, res) => {
@@ -26,42 +26,26 @@ module.exports = asyncWrap(async (req, res) => {
     let browser = null;
 
     try {
-        browser = await puppeteer.launch({
-            headless: true,
-            ignoreHTTPSErrors: true,
-            args: [
-                "--disable-setuid-sandbox",
-                "--no-sandbox",
-                "--disable-background-networking",
-                "--disable-default-apps",
-                "--disable-extensions",
-                "--disable-sync",
-                "--disable-translate",
-                "--hide-scrollbars",
-                "--metrics-recording-only",
-                "--mute-audio",
-                "--safebrowsing-disable-auto-update"
-            ]
-        });
-
+        browser = await browserPool.acquire();
+        browser = await browser.getBrowser();
         const page = await browser.newPage();
         await page.viewport({
             width: width,
             height: height
         });
         await page.goto(task.target, { waitUntil: waitUntil, timeout: timeout });
+        await page.setDefaultNavigationTimeout(waitFor);
         await page.waitFor(waitFor);
         const image = await page.screenshot({
             fullPage: fullPage,
             type: type,
             quality: quality
         });
-        res.status(200);
-        res.contentType("image/jpeg");
-        res.send(image);
+        res.status(200)
+            .contentType("image/jpeg")
+            .send(image);
     } catch (error) {
-        res.status(400);
-        res.json({
+        res.status(400).json({
             error: _.toString(error)
         });
     } finally {
