@@ -44,6 +44,7 @@ module.exports = asyncWrap(async (req, res) => {
             type: type,
             quality: quality
         });
+        await page.close();
     } catch (e) {
         error = e;
     } finally {
