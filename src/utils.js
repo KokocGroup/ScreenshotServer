@@ -1,10 +1,11 @@
 const createPuppeteerPool = require("./pool");
+const config = require("./config");
 
 const browserPool = createPuppeteerPool({
-    max: 2,
+    max: config.maxInstances,
     min: 0,
     puppeteerArgs: {
-        headless: false,
+        headless: true,
         ignoreHTTPSErrors: true,
         userDataDir: __dirname + "/../chrome_data/",
         args: [
