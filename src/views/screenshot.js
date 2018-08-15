@@ -38,8 +38,6 @@ module.exports = asyncWrap(async (req, res) => {
             height: height
         });
         await page.goto(task.target, { waitUntil: waitUntil, timeout: timeout });
-        await page.setDefaultNavigationTimeout(waitFor);
-        await page.waitFor(waitFor);
         image = await page.screenshot({
             fullPage: fullPage,
             type: type,
@@ -52,7 +50,7 @@ module.exports = asyncWrap(async (req, res) => {
             await factoryInstance.close();
         }
         if (factoryInstance) {
-            await browserPool.destroy(factoryInstance);
+            await browserPool.release(factoryInstance);
         }
     }
     if (image) {

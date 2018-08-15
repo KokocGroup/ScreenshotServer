@@ -42,15 +42,7 @@ class BrowserFactory {
 
     async close() {
         if (this.browser) {
-            const pid = this.browser.process().pid;
-
-            child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
-                if (error) {
-                    console.log(`Process Kill Error: ${error}`);
-                } else {
-                    console.log(`Process Kill Success. stdout: ${stdout} stderr:${stderr}`);
-                }
-            });
+            await this.browser.close();
         }
         this.browser = null;
     }
