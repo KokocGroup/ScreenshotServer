@@ -2,7 +2,7 @@ const asyncWrap = require("../utils").asyncWrap;
 const browserPool = require("../utils").browserPool;
 const _ = require("lodash");
 
-module.exports = asyncWrap(async (req, res) => {
+module.exports = async (req, res) => {
     const target = req.query.url;
     const type = req.query.type || "jpeg";
     const quality = _.toInteger(req.query.quality) || 100;
@@ -44,7 +44,8 @@ module.exports = asyncWrap(async (req, res) => {
             quality: quality
         });
     } catch (e) {
-        console.trace("ERROR")
+        console.console("ERROR: ", task.target, " ", _.toString(error));
+        console.trace("ERROR");
         error = e;
     } finally {
         if (browser) {
@@ -63,4 +64,4 @@ module.exports = asyncWrap(async (req, res) => {
             error: _.toString(error)
         });
     }
-});
+};
