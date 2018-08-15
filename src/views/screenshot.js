@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
             if (factoryInstance) {
                 await factoryInstance.close();
             }
-        }, waitFor + 10000);
+        }, waitFor + timeout + 10000);
         await page.goto(task.target, { waitUntil: waitUntil, timeout: timeout });
         await page.waitFor(waitFor);
         clearTimeout(closeBrowserTimeout);
