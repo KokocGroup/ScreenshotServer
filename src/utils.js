@@ -18,6 +18,7 @@ class BrowserFactory {
         this.browser = await puppeteer.launch({
             headless: true,
             ignoreHTTPSErrors: true,
+            userDataDir: __dirname + '/../chrome_data/',
             args: [
                 "--disable-setuid-sandbox",
                 "--no-sandbox",
