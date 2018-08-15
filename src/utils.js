@@ -16,7 +16,7 @@ class BrowserFactory {
     async getBrowser() {
         await this.close();
         this.browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             ignoreHTTPSErrors: true,
             userDataDir: __dirname + "/../chrome_data/",
             args: [
