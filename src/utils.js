@@ -37,31 +37,20 @@ class BrowserFactory {
             ]
         });
 
-        const pid = this.browser.process().pid;
-
-        this.browser.on(
-            "disconnected",
-            () => {
-                setTimeout(() => {
-                    console.log(`Browser Disconnected... Process Id: ${pid}`);
-                    child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
-                        if (error) {
-                            console.log(`Process Kill Error: ${error}`);
-                        } else {
-                            console.log(`Process Kill Success. stdout: ${stdout} stderr:${stderr}`);
-                        }
-                    });
-                });
-            },
-            100
-        );
-
         return this.browser;
     }
 
     async close() {
         if (this.browser) {
-            await this.browser.disconnect();
+            const pid = this.browser.process().pid;
+
+            child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`Process Kill Error: ${error}`);
+                } else {
+                    console.log(`Process Kill Success. stdout: ${stdout} stderr:${stderr}`);
+                }
+            });
         }
         this.browser = null;
     }

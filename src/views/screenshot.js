@@ -30,6 +30,7 @@ module.exports = asyncWrap(async (req, res) => {
 
     try {
         factoryInstance = await browserPool.acquire();
+
         browser = await factoryInstance.getBrowser();
         const page = await browser.newPage();
         await page.viewport({
@@ -44,7 +45,6 @@ module.exports = asyncWrap(async (req, res) => {
             type: type,
             quality: quality
         });
-        await page.close();
     } catch (e) {
         error = e;
     } finally {
