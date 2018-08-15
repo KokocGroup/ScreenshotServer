@@ -46,12 +46,9 @@ class BrowserFactory {
             "disconnected",
             () => {
                 setTimeout(() => {
-                    console.log(`Browser Disconnected... Process Id: ${pid}`);
-                    child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
+                    child_process.exec(`kill -9 ${this.pid}`, (error, stdout, stderr) => {
                         if (error) {
                             console.log(`Process Kill Error: ${error}`);
-                        } else {
-                            console.log(`Process Kill Success. stdout: ${stdout} stderr:${stderr}`);
                         }
                     });
                 });
