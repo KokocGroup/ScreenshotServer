@@ -28,6 +28,8 @@ module.exports = async (req, res) => {
     let image = null;
     let error = null;
 
+    console.log("GET TASK: ", task)
+
     try {
         factoryInstance = await browserPool.acquire();
 
@@ -37,9 +39,29 @@ module.exports = async (req, res) => {
             width: width,
             height: height
         });
+        await page.evaluateOnNewDocument(function() {
+            navigator.geolocation.getCurrentPosition = function(cb) {
+                setTimeout(() => {
+                    cb({
+                        coords: {
+                            accuracy: 21,
+                            altitude: null,
+                            altitudeAccuracy: null,
+                            heading: null,
+                            latitude: 23.129163,
+                            longitude: 113.264435,
+                            speed: null
+                        }
+                    });
+                }, 1000);
+            };
+        });
+
         await page.goto(task.target, { waitUntil: waitUntil, timeout: timeout });
+        await page.waitFor(waitFor);
         image = await page.screenshot({
             fullPage: fullPage,
+            omitBackground: true,
             type: type,
             quality: quality
         });
@@ -54,6 +76,7 @@ module.exports = async (req, res) => {
                 await browserPool.release(factoryInstance);
             }
         } catch (e) {
+            error = e;
             console.log("ERROR: ", task.target, " ", _.toString(e));
             console.trace("ERROR");
         }

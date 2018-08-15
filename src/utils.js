@@ -16,14 +16,15 @@ class BrowserFactory {
     async getBrowser() {
         await this.close();
         this.browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             ignoreHTTPSErrors: true,
-            userDataDir: __dirname + '/../chrome_data/',
+            userDataDir: __dirname + "/../chrome_data/",
             args: [
                 "--disable-setuid-sandbox",
                 "--no-sandbox",
                 "--disable-background-networking",
                 "--disable-default-apps",
+                "--ignore-certificate-errors",
                 "--disable-extensions",
                 "--disable-sync",
                 "--disable-translate",
@@ -33,10 +34,30 @@ class BrowserFactory {
                 "--safebrowsing-disable-auto-update",
                 "--disable-gpu",
                 "--single-process",
+                "--disable-notifications",
+                "--disable-search-geolocation-disclosure",
                 "--disable-web-security",
                 "--disable-dev-profile"
             ]
         });
+
+        this.pid = this.browser.process().pid;
+        this.browser.on(
+            "disconnected",
+            () => {
+                setTimeout(() => {
+                    console.log(`Browser Disconnected... Process Id: ${pid}`);
+                    child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(`Process Kill Error: ${error}`);
+                        } else {
+                            console.log(`Process Kill Success. stdout: ${stdout} stderr:${stderr}`);
+                        }
+                    });
+                });
+            },
+            100
+        );
 
         return this.browser;
     }
