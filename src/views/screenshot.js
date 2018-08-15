@@ -44,6 +44,7 @@ module.exports = asyncWrap(async (req, res) => {
             quality: quality
         });
     } catch (e) {
+        console.trace("ERROR")
         error = e;
     } finally {
         if (browser) {
