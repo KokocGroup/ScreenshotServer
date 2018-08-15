@@ -50,14 +50,13 @@ class BrowserFactory {
                             console.log(`Process Kill Error: ${error}`);
                         }
                     });
-                }); 
+                });
             },
             100
         );
 
         return this.browser;
     }
-
     async close() {
         if (this.browser) {
             await this.browser.close();

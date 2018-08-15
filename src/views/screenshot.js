@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     let image = null;
     let error = null;
 
-    console.log("GET TASK: ", task)
+    console.log("GET TASK: ", task);
 
     try {
         factoryInstance = await browserPool.acquire();
@@ -57,8 +57,14 @@ module.exports = async (req, res) => {
             };
         });
 
+        const closeBrowserTimeout = setTimeout(async () => {
+            if (factoryInstance) {
+                await factoryInstance.close();
+            }
+        }, waitFor + 2000);
         await page.goto(task.target, { waitUntil: waitUntil, timeout: timeout });
         await page.waitFor(waitFor);
+        clearTimeout(closeBrowserTimeout);
         image = await page.screenshot({
             fullPage: fullPage,
             omitBackground: true,
@@ -69,10 +75,8 @@ module.exports = async (req, res) => {
         error = e;
     } finally {
         try {
-            if (browser) {
-                await factoryInstance.close();
-            }
             if (factoryInstance) {
+                await factoryInstance.close();
                 await browserPool.release(factoryInstance);
             }
         } catch (e) {
