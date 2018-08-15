@@ -1,6 +1,5 @@
 const puppeteer = require("puppeteer");
 const genericPool = require("generic-pool");
-const config = require("./config");
 const child_process = require("child_process");
 
 const asyncWrap = fn => (req, res, next) => {
@@ -51,7 +50,7 @@ class BrowserFactory {
                             console.log(`Process Kill Error: ${error}`);
                         }
                     });
-                });
+                }); 
             },
             100
         );
@@ -78,9 +77,9 @@ const browserPool = genericPool.createPool(
         validator: () => Promise.resolve(false)
     },
     {
-        max: config.maxInstances,
+        max: 2,
         min: 0,
-        maxWaitingClients: config.maxInstances,
+        maxWaitingClients: 2,
         acquireTimeoutMillis: 10000
     }
 );
