@@ -44,15 +44,18 @@ module.exports = async (req, res) => {
             quality: quality
         });
     } catch (e) {
-        console.console("ERROR: ", task.target, " ", _.toString(error));
-        console.trace("ERROR");
         error = e;
     } finally {
-        if (browser) {
-            await factoryInstance.close();
-        }
-        if (factoryInstance) {
-            await browserPool.release(factoryInstance);
+        try {
+            if (browser) {
+                await factoryInstance.close();
+            }
+            if (factoryInstance) {
+                await browserPool.release(factoryInstance);
+            }
+        } catch (e) {
+            console.log("ERROR: ", task.target, " ", _.toString(e));
+            console.trace("ERROR");
         }
     }
     if (image) {
