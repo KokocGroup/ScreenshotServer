@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const genericPool = require("generic-pool");
+const child_process = require("child_process");
 
 const initPuppeteerPool = ({
     max = 2,
@@ -14,9 +15,20 @@ const initPuppeteerPool = ({
     const factory = {
         create: () => {
             return puppeteer.launch(puppeteerArgs).then(instance => {
+                const pid = instance.process().pid;
+                instance.on(
+                    "disconnected",
+                    () => {
+                        setTimeout(() => {
+                            child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {});
+                        });
+                    },
+                    100
+                );
+
                 instance.useCount = 0;
                 return instance;
-            })
+            });
         },
         destroy: instance => {
             return instance.close();
