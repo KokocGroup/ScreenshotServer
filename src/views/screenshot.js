@@ -34,6 +34,13 @@ module.exports = (req, res) => {
                     width: width,
                     height: height
                 });
+
+                page.on("error", async error => {
+                    console.log("Page crashed: ", error);
+                    await page.close();
+                    throw Error(error);
+                });
+
                 const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
                 if (!status.ok) {
                     throw new Error(`cannot open ${task.target}`);
@@ -47,7 +54,7 @@ module.exports = (req, res) => {
             } catch (error) {
                 throw error;
             } finally {
-                page.close();
+                await page.close();
             }
             return image;
         })
