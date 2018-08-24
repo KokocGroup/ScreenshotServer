@@ -20,7 +20,9 @@ module.exports = (req, res) => {
         fullPage,
         waitUntil,
         waitFor,
-        timeout
+        timeout,
+        width,
+        height
     };
 
     console.log("GET TASK: ", task);
@@ -45,7 +47,6 @@ module.exports = (req, res) => {
                 if (!status.ok) {
                     throw new Error(`cannot open ${task.target}`);
                 }
-                await page.waitFor(waitFor);
                 image = await page.screenshot({
                     fullPage: fullPage,
                     type: type,

@@ -48,12 +48,7 @@ const initPuppeteerPool = ({
         ...otherConfig
     };
     const pool = genericPool.createPool(factory, config);
-    const genericAcquire = pool.acquire.bind(pool);
-    pool.acquire = () =>
-        genericAcquire().then(instance => {
-            instance.useCount += 1;
-            return instance;
-        });
+
     pool.use = fn => {
         let resource;
         return pool
@@ -65,10 +60,12 @@ const initPuppeteerPool = ({
             .then(fn)
             .then(
                 result => {
+                    resource.useCount += 1;
                     pool.release(resource);
                     return result;
                 },
                 err => {
+                    resource.useCount += 1;
                     pool.release(resource);
                     throw err;
                 }
