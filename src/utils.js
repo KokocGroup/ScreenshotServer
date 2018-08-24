@@ -8,7 +8,6 @@ const browserPool = createPuppeteerPool({
     puppeteerArgs: {
         headless: true,
         ignoreHTTPSErrors: true,
-        userDataDir: __dirname + "/../chrome_data/",
         args: [
             "--disable-setuid-sandbox",
             "--no-sandbox",

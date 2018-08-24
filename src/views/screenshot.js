@@ -45,7 +45,7 @@ module.exports = (req, res) => {
                     quality: quality
                 });
             } catch (error) {
-                throw Error(error);
+                throw error;
             } finally {
                 page.close();
             }

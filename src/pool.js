@@ -36,7 +36,6 @@ const initPuppeteerPool = ({
         },
         validate: instance => {
             return validator(instance).then(valid => {
-                console.log(instance.useCount, instance.useCount < maxUses, instance.isDisconected);
                 return Promise.resolve(valid && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses));
             });
         }
