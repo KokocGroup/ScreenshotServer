@@ -36,7 +36,7 @@ module.exports = (req, res) => {
                 });
                 const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
                 if (!status.ok) {
-                    throw new Error("cannot open google.com");
+                    throw new Error(`cannot open ${task.target}`);
                 }
                 await page.waitFor(waitFor);
                 image = await page.screenshot({
