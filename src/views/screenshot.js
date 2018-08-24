@@ -29,22 +29,26 @@ module.exports = (req, res) => {
         .use(async browser => {
             let image = null;
             const page = await browser.newPage();
-            await page.viewport({
-                width: width,
-                height: height
-            });
-            const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
-            if (!status.ok) {
-                throw new Error("cannot open google.com");
+            try {
+                await page.viewport({
+                    width: width,
+                    height: height
+                });
+                const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
+                if (!status.ok) {
+                    throw new Error("cannot open google.com");
+                }
+                await page.waitFor(waitFor);
+                image = await page.screenshot({
+                    fullPage: fullPage,
+                    type: type,
+                    quality: quality
+                });
+            } catch (error) {
+                throw Error(error);
+            } finally {
+                page.close();
             }
-            await page.waitFor(waitFor);
-            image = await page.screenshot({
-                fullPage: fullPage,
-                type: type,
-                quality: quality
-            });
-
-            page.close();
             return image;
         })
         .then(

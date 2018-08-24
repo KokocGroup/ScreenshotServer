@@ -4,6 +4,7 @@ const config = require("./config");
 const browserPool = createPuppeteerPool({
     max: config.maxInstances,
     min: 0,
+    maxUses: 10,
     puppeteerArgs: {
         headless: true,
         ignoreHTTPSErrors: true,

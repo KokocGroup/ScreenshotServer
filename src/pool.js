@@ -15,18 +15,19 @@ const initPuppeteerPool = ({
     const factory = {
         create: () => {
             return puppeteer.launch(puppeteerArgs).then(instance => {
+                instance.isDisconected = false;
+                instance.useCount = 0;
                 const pid = instance.process().pid;
                 instance.on(
                     "disconnected",
                     () => {
+                        instance.isDisconected = true;
                         setTimeout(() => {
                             child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {});
                         });
                     },
-                    100
+                    1000
                 );
-
-                instance.useCount = 0;
                 return instance;
             });
         },
@@ -34,7 +35,10 @@ const initPuppeteerPool = ({
             return instance.close();
         },
         validate: instance => {
-            return validator(instance).then(valid => Promise.resolve(valid && (maxUses <= 0 || instance.useCount < maxUses)));
+            return validator(instance).then(valid => {
+                console.log(instance.useCount, instance.useCount < maxUses, instance.isDisconected);
+                return Promise.resolve(valid && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses));
+            });
         }
     };
     const config = {
