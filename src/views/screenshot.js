@@ -25,8 +25,6 @@ module.exports = (req, res) => {
         height
     };
 
-    console.log("GET TASK: ", task);
-
     browserPool
         .use(async browser => {
             let image = null;
