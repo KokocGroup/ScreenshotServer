@@ -23,10 +23,8 @@ const initPuppeteerPool = ({
                     () => {
                         instance.isDisconected = true;
                         setTimeout(() => {
-                            child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {
-                                console.log("Disconnect: ", error, stdout, stderr)
-                            });
-                        }, 2000)
+                            child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {});
+                        }, 5000)
                     }
                 );
                 return instance;
