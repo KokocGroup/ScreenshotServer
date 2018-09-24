@@ -64,6 +64,7 @@ module.exports = (req, res) => {
                     .send(image);
             },
             error => {
+                console.error(_.toString(error))
                 res.status(400).json({
                     error: _.toString(error)
                 });
