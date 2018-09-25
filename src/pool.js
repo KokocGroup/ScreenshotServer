@@ -17,10 +17,10 @@ const initPuppeteerPool = ({
             return puppeteer.launch(puppeteerArgs).then(instance => {
                 instance.isDisconected = false;
                 instance.useCount = 0;
+                instance.startDate = new Date();
                 const pid = instance.process().pid;
                 console.log("Create: ", pid);
                 instance.on("disconnected", () => {
-                    instance.startDate = new Date();
                     instance.isDisconected = true;
                     setTimeout(() => {
                         try {
@@ -92,6 +92,7 @@ const initPuppeteerPool = ({
                 },
                 err => {
                     pool.release(resource);
+                    console.error(err.stack)
                     throw err;
                 }
             );
