@@ -59,7 +59,7 @@ const initPuppeteerPool = ({
             .then(r => {
                 resource = r;
                 resource.useCount += 1;
-                pid.process().pid
+                pid = resource.process().pid
                 return r;
             })
             .then(fn)
