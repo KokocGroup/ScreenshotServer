@@ -27,11 +27,9 @@ const initPuppeteerPool = ({
             });
         },
         destroy: instance => {
-            return new Promise((resolve, reject) => {
                 const pid = instance.process().pid;
                 console.log("Destroy: ", pid);
-                instance.close()
-            });
+                return instance.close()
         },
         validate: instance => {
             return validator(instance).then(valid => {
