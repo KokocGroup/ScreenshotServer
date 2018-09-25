@@ -28,9 +28,9 @@ module.exports = (req, res) => {
     browserPool
         .use(async browser => {
             let image = null;
-
-            const page = await browser.newPage();
+            let page = null;
             try {
+                const page = await browser.newPage();
                 await page.viewport({
                     width: width,
                     height: height
@@ -55,7 +55,9 @@ module.exports = (req, res) => {
             } catch (error) {
                 throw error;
             } finally {
-                browser.close()
+                if (page) {
+                    await page.close();
+                }
             }
             return image;
         })
