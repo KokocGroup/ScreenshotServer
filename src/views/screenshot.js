@@ -41,7 +41,8 @@ module.exports = (req, res) => {
                     throw Error(error);
                 });
 
-                const status = await page.goto(task.target, { timeout: timeout, waitUntil: "load" });
+                const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
+                await page.waitFor(waitFor);
                 if (!status.ok) {
                     throw new Error(`cannot open ${task.target}`);
                 }
