@@ -70,7 +70,6 @@ const initPuppeteerPool = ({
                 },
                 err => {
                     pool.release(resource);
-                    console.error(`pid ${pid}: `, err.stack)
                     throw err;
                 }
             );
