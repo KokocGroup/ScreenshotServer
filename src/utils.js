@@ -4,7 +4,7 @@ const config = require("./config");
 const browserPool = createPuppeteerPool({
     max: config.maxInstances,
     min: 0,
-    maxUses: 50,
+    maxUses: 20,
     evictionRunIntervalMillis: 3000,
     idleTimeoutMillis: 3000,
     puppeteerArgs: {
