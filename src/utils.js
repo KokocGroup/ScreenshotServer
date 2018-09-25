@@ -4,9 +4,9 @@ const config = require("./config");
 const browserPool = createPuppeteerPool({
     max: config.maxInstances,
     min: 0,
-    maxUses: 3,
-    evictionRunIntervalMillis: 10000,
-    idleTimeoutMillis: 10000,
+    maxUses: 10,
+    evictionRunIntervalMillis: 3000,
+    idleTimeoutMillis: 3000,
     puppeteerArgs: {
         headless: true,
         ignoreHTTPSErrors: true,
@@ -27,7 +27,6 @@ const browserPool = createPuppeteerPool({
             "--mute-audio",
             "--safebrowsing-disable-auto-update",
             "--disable-gpu",
-            "--single-process",
             "--disable-notifications",
             "--disable-search-geolocation-disclosure",
             "--disable-web-security",

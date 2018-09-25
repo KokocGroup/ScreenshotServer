@@ -18,24 +18,48 @@ const initPuppeteerPool = ({
                 instance.isDisconected = false;
                 instance.useCount = 0;
                 const pid = instance.process().pid;
-                instance.on(
-                    "disconnected",
-                    () => {
-                        instance.isDisconected = true;
-                        setTimeout(() => {
-                            child_process.exec(`kill -9 ${pid}`, (error, stdout, stderr) => {});
-                        }, 5000)
-                    }
-                );
+                console.log("Create: ", pid);
+                instance.on("disconnected", () => {
+                    instance.isDisconected = true;
+                    setTimeout(() => {
+                        try {
+                            process.kill(pid, "SIGKILL");
+                        } catch (error) {
+                            if (error.code !== "ESRCH") {
+                                console.error(`Error close pid ${pid}`, error);
+                            }
+                        }
+                    }, 5000);
+                });
                 return instance;
             });
         },
         destroy: instance => {
-            return instance.close();
+            return new Promise((resolve, reject) => {
+                const pid = instance.process().pid;
+                console.log("Destroy: ", pid);
+                instance.close().then(() => {
+                    instance.isDisconected = true;
+                    setTimeout(() => {
+                        try {
+                            process.kill(pid, "SIGKILL");
+                        } catch (error) {
+                            if (error.code !== "ESRCH") {
+                                console.error(`Error close pid ${pid}`, error);
+                                reject(error);
+                            }
+                        } finally {
+                            resolve(true);
+                        }
+                    }, 2000);
+                });
+            });
         },
         validate: instance => {
             return validator(instance).then(valid => {
-                return Promise.resolve(valid && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses));
+                const isValid = valid && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses);
+                console.log("Validate: ", instance.process().pid, isValid);
+                return Promise.resolve(isValid);
             });
         }
     };
@@ -54,17 +78,16 @@ const initPuppeteerPool = ({
             .acquire()
             .then(r => {
                 resource = r;
-                return resource;
+                resource.useCount += 1;
+                return r;
             })
             .then(fn)
             .then(
                 result => {
-                    resource.useCount += 1;
                     pool.release(resource);
                     return result;
                 },
                 err => {
-                    resource.useCount += 1;
                     pool.release(resource);
                     throw err;
                 }

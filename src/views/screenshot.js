@@ -28,6 +28,7 @@ module.exports = (req, res) => {
     browserPool
         .use(async browser => {
             let image = null;
+
             const page = await browser.newPage();
             try {
                 await page.viewport({
@@ -41,10 +42,11 @@ module.exports = (req, res) => {
                     throw Error(error);
                 });
 
-                const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
-                if (!status.ok) {
+                const status = await page.goto(task.target, { timeout: 2, waitUntil: "load" });
+                if (status.ok) {
                     throw new Error(`cannot open ${task.target}`);
                 }
+
                 image = await page.screenshot({
                     fullPage: fullPage,
                     type: type,
@@ -64,7 +66,6 @@ module.exports = (req, res) => {
                     .send(image);
             },
             error => {
-                console.error(_.toString(error))
                 res.status(400).json({
                     error: _.toString(error)
                 });

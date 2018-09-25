@@ -9,8 +9,7 @@ app.use(morgan(":date[clf] :method :url :status :res[content-length] - :response
 app.use("/", routes);
 
 server = http.createServer(app)
-server.maxConnections = config.maxInstances * 3
-console.log(server.maxConnections)
+server.maxConnections = config.maxInstances * 2
 
 server.listen(config.port, config.bind, async function() {
     console.log(`ScreenshotServer listening ${config.bind} on port ${config.port}! Instances: ${config.maxInstances}. Max connections: ${server.maxConnections}`);
