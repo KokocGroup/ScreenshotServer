@@ -24,16 +24,12 @@ const initPuppeteerPool = ({
                     setTimeout(() => {
                         try {
                             process.kill(pid, "SIGKILL");
-                            resolve(true);
                         } catch (error) {
                             if (error.code !== "ESRCH") {
                                 console.error(`Error close pid ${pid}`, error);
-                                reject(error);
-                            } else {
-                                resolve(true);
                             }
                         }
-                    }, 1000);
+                    }, 5000);
                 });
                 return instance;
             });
@@ -56,7 +52,7 @@ const initPuppeteerPool = ({
                                 resolve(true);
                             }
                         }
-                    }, 1000);
+                    }, 2000);
                 });
             });
         },
