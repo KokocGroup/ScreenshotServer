@@ -36,7 +36,7 @@ const initPuppeteerPool = ({
         validate: instance => {
             return validator(instance).then(valid => {
                 const dateValidate = (new Date() - instance.startDate) > (60 * 1000)
-                const isValid = valid && dateValidate && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses);
+                const isValid = valid && !dateValidate && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses);
                 console.log("Validate: ", instance.process().pid, isValid);
                 return Promise.resolve(isValid);
             });
