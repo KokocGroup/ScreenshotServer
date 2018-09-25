@@ -55,7 +55,7 @@ module.exports = (req, res) => {
             } catch (error) {
                 throw error;
             } finally {
-                await page.close();
+                browser.close()
             }
             return image;
         })
