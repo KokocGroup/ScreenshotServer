@@ -38,7 +38,6 @@ module.exports = (req, res) => {
 
                 page.on("error", async error => {
                     console.log("Page crashed: ", error);
-                    await page.close();
                     throw Error(error);
                 });
 

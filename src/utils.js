@@ -3,6 +3,7 @@ const config = require("./config");
 
 const browserPool = createPuppeteerPool({
     max: config.maxInstances,
+    maxWaitingClients: config.maxInstances,
     min: 0,
     maxUses: 20,
     evictionRunIntervalMillis: 3000,
@@ -11,7 +12,7 @@ const browserPool = createPuppeteerPool({
         headless: true,
         ignoreHTTPSErrors: true,
         args: [
-            "--no-sandbox", 
+            "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-dev-profile",
             "--disable-setuid-sandbox",
