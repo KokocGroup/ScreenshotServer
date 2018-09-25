@@ -20,17 +20,8 @@ const initPuppeteerPool = ({
                 instance.startDate = new Date();
                 const pid = instance.process().pid;
                 console.log("Create: ", pid);
-                instance.on("disconnected", () => {
-                    instance.isDisconected = true;
-                    setTimeout(() => {
-                        try {
-                            process.kill(pid, "SIGKILL");
-                        } catch (error) {
-                            if (error.code !== "ESRCH") {
-                                console.error(`Error close pid ${pid}`, error);
-                            }
-                        }
-                    }, 5000);
+                instance.on("disconnected", function() {
+                    this.isDisconected = true;
                 });
                 return instance;
             });
@@ -39,22 +30,7 @@ const initPuppeteerPool = ({
             return new Promise((resolve, reject) => {
                 const pid = instance.process().pid;
                 console.log("Destroy: ", pid);
-                instance.close().then(() => {
-                    instance.isDisconected = true;
-                    setTimeout(() => {
-                        try {
-                            process.kill(pid, "SIGKILL");
-                            resolve(true);
-                        } catch (error) {
-                            if (error.code !== "ESRCH") {
-                                console.error(`Error close pid ${pid}`, error);
-                                reject(error);
-                            } else {
-                                resolve(true);
-                            }
-                        }
-                    }, 2000);
-                });
+                instance.close()
             });
         },
         validate: instance => {
@@ -77,11 +53,13 @@ const initPuppeteerPool = ({
 
     pool.use = fn => {
         let resource;
+        let pid;
         return pool
             .acquire()
             .then(r => {
                 resource = r;
                 resource.useCount += 1;
+                pid.process().pid
                 return r;
             })
             .then(fn)
@@ -92,7 +70,7 @@ const initPuppeteerPool = ({
                 },
                 err => {
                     pool.release(resource);
-                    console.error(err.stack)
+                    console.error(`pid ${pid}: `, err.stack)
                     throw err;
                 }
             );
