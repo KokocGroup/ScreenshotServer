@@ -19,34 +19,31 @@ const initPuppeteerPool = ({
                 instance.useCount = 0;
                 instance.startDate = new Date();
                 const pid = instance.process().pid;
-                console.log("Create: ", pid);
                 instance.on("disconnected", function() {
-                    this.isDisconected = true;
+                    instance.isDisconected = true;
                 });
 
-                instance.clearTimeout = setTimeout(function() {
-                    try {
-                        console.log("kill ", pid);
-                        process.kill(pid, "SIGKILL");
-                    } catch (e) {
-                    } finally {
-                        clearTimeout(instance.clearTimeout);
+                instance.clearInterval = setInterval(function() {
+                    if (instance.isDisconected) {
+                        try {
+                            process.kill(pid, "SIGKILL");
+                        } catch (e) {
+                        } finally {
+                            clearInterval(instance.clearInterval);
+                        }
                     }
-                }, 60 * 1000);
+                }, 1000);
 
                 return instance;
             });
         },
         destroy: instance => {
-            const pid = instance.process().pid;
-            console.log("Destroy: ", pid);
             return instance.close();
         },
         validate: instance => {
             return validator(instance).then(valid => {
                 const dateValidate = new Date() - instance.startDate > 60 * 1000;
                 const isValid = valid && !dateValidate && !instance.isDisconected && (maxUses <= 0 || instance.useCount < maxUses);
-                console.log("Validate: ", instance.process().pid, isValid);
                 return Promise.resolve(isValid);
             });
         }
@@ -62,23 +59,31 @@ const initPuppeteerPool = ({
 
     pool.use = fn => {
         let resource;
-        let pid;
+        let pages;
         return pool
             .acquire()
-            .then(r => {
+            .then(async r => {
                 resource = r;
                 resource.useCount += 1;
-                pid = resource.process().pid;
+                pages = (await resource.pages()).length;
                 return r;
             })
             .then(fn)
             .then(
-                result => {
-                    pool.release(resource);
+                async result => {
+                    if (pages !== (await resource.pages()).length) {
+                        pool.destroy(resource);
+                    } else {
+                        pool.release(resource);
+                    }
                     return result;
                 },
-                err => {
-                    pool.release(resource);
+                async err => {
+                    if (pages !== (await resource.pages()).length) {
+                        pool.destroy(resource);
+                    } else {
+                        pool.release(resource);
+                    }
                     throw err;
                 }
             );

@@ -2,6 +2,40 @@ const asyncWrap = require("../utils").asyncWrap;
 const browserPool = require("../utils").browserPool;
 const _ = require("lodash");
 
+async function getScreenshot(browser, task) {
+    let image = null;
+    let page = null;
+    try {
+        page = await browser.newPage();
+        await page.viewport({
+            width: task.width,
+            height: task.height
+        });
+
+        page.on("error", async error => {
+            console.log("Page crashed: ", error);
+            throw Error(error);
+        });
+
+        const status = await page.goto(task.target, { timeout: task.timeout, waitUntil: task.waitUntil });
+        await page.waitFor(task.waitFor);
+        if (!status.ok) {
+            throw new Error(`cannot open ${task.target}`);
+        }
+
+        image = await page.screenshot({
+            fullPage: task.fullPage,
+            type: task.type,
+            quality: task.quality
+        });
+    } finally {
+        if (page) {
+            await page.close();
+        }
+    }
+    return image;
+}
+
 module.exports = (req, res) => {
     const target = req.query.url;
     const type = req.query.type || "jpeg";
@@ -26,38 +60,15 @@ module.exports = (req, res) => {
     };
 
     browserPool
-        .use(async browser => {
-            let image = null;
-            let page = null;
-            try {
-                const page = await browser.newPage();
-                await page.viewport({
-                    width: width,
-                    height: height
-                });
-
-                page.on("error", async error => {
-                    console.log("Page crashed: ", error);
-                    throw Error(error);
-                });
-                
-                const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
-                await page.waitFor(waitFor);
-                if (!status.ok) {
-                    throw new Error(`cannot open ${task.target}`);
-                }
-
-                image = await page.screenshot({
-                    fullPage: fullPage,
-                    type: type,
-                    quality: quality
-                });
-            } finally {
-                if (page) {
-                    await page.close();
-                }
-            }
-            return image;
+        .use(browser => {
+            return Promise.race([
+                getScreenshot(browser, task),
+                new Promise((resolve, reject) => {
+                    setTimeout(function() {
+                        reject(new Error(`Timeout: ${task.timeout}`));
+                    }, task.timeout);
+                })
+            ]);
         })
         .then(
             image => {

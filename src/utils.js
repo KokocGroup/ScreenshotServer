@@ -5,9 +5,9 @@ const browserPool = createPuppeteerPool({
     max: config.maxInstances,
     maxWaitingClients: config.maxInstances,
     min: 0,
-    maxUses: 20,
-    evictionRunIntervalMillis: 3000,
-    idleTimeoutMillis: 3000,
+    maxUses: 10,
+    evictionRunIntervalMillis: 10000,
+    idleTimeoutMillis: 10000,
     puppeteerArgs: {
         headless: true,
         ignoreHTTPSErrors: true,
