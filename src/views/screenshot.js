@@ -40,7 +40,7 @@ module.exports = (req, res) => {
                     console.log("Page crashed: ", error);
                     throw Error(error);
                 });
-
+                
                 const status = await page.goto(task.target, { timeout: timeout, waitUntil: waitUntil });
                 await page.waitFor(waitFor);
                 if (!status.ok) {
@@ -52,8 +52,6 @@ module.exports = (req, res) => {
                     type: type,
                     quality: quality
                 });
-            } catch (error) {
-                throw error;
             } finally {
                 if (page) {
                     await page.close();

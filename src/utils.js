@@ -22,6 +22,7 @@ const browserPool = createPuppeteerPool({
             "--disable-extensions",
             "--disable-translate",
             "--hide-scrollbars",
+            "--single-process",
             "--mute-audio",
             "--safebrowsing-disable-auto-update",
             "--disable-gpu",
