@@ -7,7 +7,7 @@ async function getScreenshot(browser, task) {
     let page = null;
     try {
         page = await browser.newPage();
-        await page.viewport({
+        await page.setViewport({
             width: task.width,
             height: task.height
         });
